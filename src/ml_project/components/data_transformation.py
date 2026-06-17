@@ -8,6 +8,7 @@ from sklearn.preprocessing import OneHotEncoder,StandardScaler
 from sklearn.impute import SimpleImputer
 from sklearn.pipeline import Pipeline
 from src.ml_project.exception import CustomException 
+from src.ml_project.utils import save_object
 from src.ml_project.logger import logging
 
 import os
@@ -66,7 +67,22 @@ class DataTransformation:
              logging.info("applying preprocessing object on training and testing dataframe")
              input_feature_train_arr=preprocessor_obj.fit_transform(input_feature_train_df)
              input_feature_test_arr=preprocessor_obj.transform(input_feature_test_df)
-             train
+             train_arr=np.c_[
+                 input_feature_train_arr,np.array(target_feature_train_df)
+                            ]
+             test_arr=np.c_[
+                    input_feature_test_arr,np.array(target_feature_test_df)            
+             ]
+             logging.info(f"saved preprocessing object")
+             save_object(
+                  file_path=self.data_transformation_config.preprocessor_obj_file_path,
+                  obj=preprocessor_obj
+              )
+             return (
+                 train_arr,
+                 test_arr,
+                 self.data_transformation_config.preprocessor_obj_file_path
+             )
 
 
         except Exception as e:
